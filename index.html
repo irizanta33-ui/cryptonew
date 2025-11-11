@@ -66,7 +66,6 @@
     /* small utilities */
     .muted{color:var(--muted)}
     .kicker{font-size:12px;text-transform:uppercase;color:var(--muted);letter-spacing:0.08em}
-
   </style>
 </head>
 <body>
@@ -133,7 +132,6 @@
             <p class="muted">Gunakan exchange teregulasi, lakukan KYC, transfer dana, dan beli pasangan BTC/IDR atau BTC/USDT tergantung platform.</p>
           </details>
         </section>
-
       </div>
 
       <aside>
@@ -212,10 +210,9 @@
 
     <section class="card">
       <div class="kicker">Contoh Integrasi Berita (placeholder)</div>
-      <p class="muted">Bagian ini bisa dihubungkan ke API berita (contoh: CryptoPanic, NewsAPI) untuk menarik headline terbaru. Contoh pseudo-code ada di bawah:</p>
+      <p class="muted">Bagian ini bisa dihubungkan ke API berita (contoh: CryptoPanic, NewsAPI) untuk menarik headline terbaru.</p>
       <pre><code>// fetch('https://newsapi.org/v2/everything?q=crypto&apiKey=YOUR_KEY')
-//  .then(r=>r.json()).then(data=>renderNews(data.articles))
-</code></pre>
+//  .then(r=>r.json()).then(data=>renderNews(data.articles))</code></pre>
     </section>
 
     <footer>
@@ -225,7 +222,6 @@
   </div>
 
   <script>
-    // sample dataset (replace with real API responses)
     const sampleNews = [
       {id:1,cat:'news',title:'Bitcoin mencapai level psikologis baru',time:'Nov 10, 2025',src:'Kontributor',summary:'Bitcoin menunjukkan kenaikan signifikan setelah rilis data ekonomi.'},
       {id:2,cat:'analysis',title:'Analisis on-chain Ethereum',time:'Nov 9, 2025',src:'Analyst',summary:'Aktivitas smart contract meningkat pada protokol DeFi tertentu.'},
@@ -252,11 +248,9 @@
       })
     }
 
-    // initial render
     renderNews(sampleNews.slice(0,3));
 
     document.getElementById('loadMore').addEventListener('click', ()=>{
-      // in real app: fetch more from server
       renderNews(sampleNews);
     })
 
@@ -272,7 +266,6 @@
       else renderNews(sampleNews.filter(n=>n.cat===f));
     }))
 
-    // theme toggle (demo: light/dark)
     const themeBtn = document.getElementById('themeToggle');
     themeBtn.addEventListener('click', ()=>{
       if(document.documentElement.style.getPropertyValue('--bg') === ''){
@@ -288,11 +281,8 @@
         document.body.style.color='#e6eef8';
         document.documentElement.style.setProperty('--bg','');
       }
-      // simple animation
-      document.querySelectorAll('.card').forEach(c=>{c.style.transform='translateY(0)';});
     });
 
-    // subscribe demo
     document.getElementById('subFormBtn').addEventListener('click', ()=>{
       const e = document.getElementById('email').value.trim();
       if(!e) return alert('Masukkan email dulu.');
@@ -304,7 +294,6 @@
       document.getElementById('email').focus();
     })
 
-    // accessibility tweaks
     document.addEventListener('keydown', e=>{
       if(e.key==='/' && document.activeElement.tagName !== 'INPUT'){
         e.preventDefault(); q.focus();

@@ -1,25 +1,10 @@
 <!doctype html>
-<!--
-  Crypto Rizz v2.0 — Enhanced Crypto News Dashboard
-  - New Features:
-    ✅ Live search, filters, and sorting (improved)
-    ✅ Dark/Light mode auto-sync with system
-    ✅ Coin price live ticker (mocked but ready for API)
-    ✅ Pagination (client-side)
-    ✅ Favorite articles (saved to localStorage)
-    ✅ Animated transitions
-    ✅ No known bugs — tested in Chrome/Edge
-
-  Deployment:
-    1. Save this as index.html
-    2. Push to GitHub → enable Pages (main branch → root)
-    3. Optionally plug in APIs (CoinGecko, NewsAPI, etc.)
--->
+<!-- Crypto Rizz v3.0 — News Links & Dynamic Images -->
 <html lang="id">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Crypto Rizz — Crypto News Dashboard</title>
+  <title>Crypto Rizz — News Dashboard</title>
   <style>
     :root {
       --bg:#0d1117; --card:#161b22; --muted:#8b949e; --accent:#58a6ff; --radius:12px;
@@ -44,8 +29,8 @@
     main{max-width:1200px;margin:20px auto;display:grid;grid-template-columns:2fr 1fr;gap:20px;padding:0 20px}
     @media(max-width:900px){main{grid-template-columns:1fr}}
     .feed{display:flex;flex-direction:column;gap:14px}
-    .card{background:var(--card);padding:14px;border-radius:var(--radius);border:1px solid rgba(255,255,255,0.05);display:flex;gap:12px;transition:.2s}
-    .card:hover{transform:translateY(-2px);border-color:var(--accent)}
+    .card{background:var(--card);padding:14px;border-radius:var(--radius);border:1px solid rgba(255,255,255,0.05);display:flex;gap:12px;transition:.2s;text-decoration:none;color:inherit;}
+    .card:hover{transform:translateY(-2px);border-color:var(--accent);background:rgba(88,166,255,0.05)}
     .thumb{width:100px;height:70px;border-radius:var(--radius);object-fit:cover}
     .meta{font-size:12px;color:var(--muted)}
     .title{font-weight:600;margin:4px 0}
@@ -108,7 +93,7 @@
 
   <div class="pagination" id="pagination"></div>
 
-  <footer>© <span id="year"></span> Crypto Rizz — No bugs, only alpha signals 💎</footer>
+  <footer>© <span id="year"></span> Crypto Rizz — Live clickable news 💎</footer>
 
   <script>
     const state={articles:[],sentiment:'all',query:'',favorites:new Set(),page:1,perPage:6};
@@ -143,14 +128,14 @@
       for(let i=1;i<=20;i++){
         arr.push({
           id:i,
-          title:`Artikel Crypto #${i}`,
-          summary:`Ringkasan singkat berita crypto ${i}.`,
+          title:`Berita Crypto #${i}`,
+          summary:`Analisis terbaru tentang pasar crypto ke-${i}.`,
           source:srcs[i%srcs.length],
           published:now-1000*60*i*15,
           sentiment:sents[i%2],
           score:Math.random()*100,
-          image:`https://picsum.photos/seed/${i}/300/200`,
-          url:'#'
+          image:`https://images.unsplash.com/photo-${(Math.floor(Math.random()*10)+1500000000000)}?auto=format&fit=crop&w=600&q=60`,
+          url:`https://cryptonews.example.com/news-${i}`
         });
       }
       return Promise.resolve(arr);
@@ -167,16 +152,19 @@
       feed.innerHTML='';
       paginated.forEach(a=>{
         const fav=state.favorites.has(a.id);
-        feed.innerHTML+=`
-          <div class='card'>
-            <img src='${a.image}' class='thumb'>
-            <div style='flex:1'>
-              <div class='meta'>${a.source} · ${timeAgo(a.published)} <span class='badge ${a.sentiment}'>${a.sentiment}</span></div>
-              <div class='title'>${a.title}</div>
-              <div class='summary'>${a.summary}</div>
-            </div>
-            <div class='favorite ${fav?'active':''}' onclick='toggleFav(${a.id})'>★</div>
-          </div>`;
+        const card=document.createElement('a');
+        card.href=a.url;
+        card.target='_blank';
+        card.className='card';
+        card.innerHTML=`
+          <img src='${a.image}' class='thumb' alt='${a.title}'>
+          <div style='flex:1'>
+            <div class='meta'>${a.source} · ${timeAgo(a.published)} <span class='badge ${a.sentiment}'>${a.sentiment}</span></div>
+            <div class='title'>${a.title}</div>
+            <div class='summary'>${a.summary}</div>
+          </div>
+          <div class='favorite ${fav?'active':''}' onclick='event.preventDefault();toggleFav(${a.id})'>★</div>`;
+        feed.appendChild(card);
       });
       renderPagination(list.length);
     }

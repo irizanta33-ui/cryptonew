@@ -1,253 +1,278 @@
-<!DOCTYPE html>
+<!doctype html>
+<!--
+  Crypto Rizz - Single-file static HTML (index.html)
+  - A polished, responsive crypto news aggregator mockup inspired by CryptoPanic
+  - Includes: header, search, filters, sources, article cards, sorting, dark mode, and mock data
+  - How to use:
+    1) Save this file as `index.html` and open in a browser.
+    2) To deploy to GitHub Pages: create a repo, add this file to the root, commit & push, then enable Pages from the main branch -> / (root).
+    3) To use real data: replace the `fetchMockArticles()` function with calls to a news/crypto API (NewsAPI, CryptoCompare, CoinGecko, or your own backend). There is a clearly marked TODO in the JS.
+
+  License: Feel free to adapt. If you'd like me to add a backend or GitHub Actions CI to auto-publish, tell me and I'll create that next.
+-->
 <html lang="id">
 <head>
   <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>CryptoNews — Portal Berita & Edukasi Crypto</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Crypto Rizz — Crypto news aggregator</title>
+  <meta name="description" content="Crypto Rizz - kumpulan berita, sentimen, dan harga crypto." />
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>💎</text></svg>">
   <style>
-    :root {
-      --bg: #0f1724;
-      --card: #0b1320;
-      --muted: #9aa7bf;
-      --accent: #7c3aed;
-      --text: #e6eef8;
-      --light-bg: #ffffff;
-      --light-text: #111;
+    :root{
+      --bg:#0f1724; --card:#0b1220; --muted:#9aa4b2; --accent:#6ee7b7; --glass: rgba(255,255,255,0.03);
     }
+    *{box-sizing:border-box}
+    html,body{height:100%;margin:0;font-family:Inter, ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial}
+    body{background:linear-gradient(180deg,#071029 0%,#071823 100%);color:#e6eef6;line-height:1.4}
+    .container{max-width:1100px;margin:28px auto;padding:20px}
 
-    * { box-sizing: border-box; }
-    body {
-      margin: 0;
-      font-family: "Inter", system-ui;
-      background: var(--bg);
-      color: var(--text);
-      transition: background .3s, color .3s;
-    }
-    header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding: 16px 24px;
-      background: rgba(255,255,255,0.03);
-      backdrop-filter: blur(6px);
-      border-bottom: 1px solid rgba(255,255,255,0.08);
-    }
-    .logo {
-      font-weight: 700;
-      font-size: 1.4rem;
-      color: var(--accent);
-    }
-    .controls {
-      display: flex;
-      gap: 10px;
-      align-items: center;
-    }
-    input[type="text"] {
-      padding: 6px 10px;
-      border-radius: 6px;
-      border: none;
-      background: rgba(255,255,255,0.08);
-      color: var(--text);
-    }
-    select {
-      padding: 6px 10px;
-      border-radius: 6px;
-      border: none;
-      background: rgba(255,255,255,0.08);
-      color: var(--text);
-    }
-    .dark-toggle {
-      cursor: pointer;
-      font-size: 1.2rem;
-      color: var(--accent);
-    }
+    header{display:flex;gap:16px;align-items:center;justify-content:space-between}
+    .brand{display:flex;gap:12px;align-items:center}
+    .logo{width:54px;height:54px;border-radius:12px;display:grid;place-items:center;background:linear-gradient(135deg,#06b6d4,#7c3aed);box-shadow:0 6px 24px rgba(7,17,27,0.6)}
+    .logo span{font-weight:700}
+    h1{margin:0;font-size:18px}
+    .tagline{color:var(--muted);font-size:13px}
 
-    .container { max-width: 1100px; margin: 20px auto; padding: 24px; }
-    .news-list { display: grid; gap: 14px; margin-top: 20px; }
+    .controls{display:flex;gap:10px;align-items:center}
+    .search{background:var(--card);padding:8px;border-radius:10px;display:flex;gap:8px;align-items:center;min-width:320px}
+    .search input{background:transparent;border:0;color:inherit;outline:0;font-size:14px;width:100%}
+    .btn{background:transparent;border:1px solid rgba(255,255,255,0.06);padding:8px 12px;border-radius:10px;cursor:pointer;font-size:14px}
+    .btn.primary{background:linear-gradient(90deg,#06b6d4,#7c3aed);color:#021025;border:0}
 
-    .news-item {
-      padding: 16px;
-      border-radius: 10px;
-      background: rgba(255,255,255,0.04);
-      cursor: pointer;
-      transition: 0.25s;
-      border: 1px solid rgba(255,255,255,0.05);
-    }
-    .news-item:hover { background: rgba(255,255,255,0.08); }
+    main{display:grid;grid-template-columns:1fr 320px;gap:20px;margin-top:22px}
+    .feed{display:flex;flex-direction:column;gap:12px}
+    .card{background:linear-gradient(180deg,rgba(255,255,255,0.02),transparent);border-radius:12px;padding:14px;border:1px solid rgba(255,255,255,0.03);display:flex;gap:12px;align-items:flex-start}
+    .thumb{width:120px;height:80px;border-radius:8px;background:linear-gradient(90deg,#0b1220,#111827);flex-shrink:0;display:block;object-fit:cover}
+    .meta{font-size:12px;color:var(--muted);margin-bottom:6px}
+    .title{font-weight:600;margin:0 0 6px 0}
+    .summary{margin:0;color:var(--muted);font-size:14px}
+    .badge{padding:4px 8px;border-radius:999px;font-size:12px}
+    .positive{background:rgba(16,185,129,0.12);color:#6ee7b7;border:1px solid rgba(110,231,183,0.08)}
+    .negative{background:rgba(239,68,68,0.08);color:#fb7185;border:1px solid rgba(251,113,133,0.06)}
 
-    .news-item h3 { margin: 0 0 6px; }
-    .news-item .meta { color: var(--muted); font-size: 13px; }
+    aside{position:relative}
+    .panel{background:var(--card);padding:14px;border-radius:12px;border:1px solid rgba(255,255,255,0.03)}
+    .sources{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px}
+    .chip{padding:6px 10px;border-radius:999px;background:var(--glass);font-size:13px;color:var(--muted);border:1px solid rgba(255,255,255,0.02)}
 
-    .modal {
-      position: fixed;
-      inset: 0;
-      background: rgba(0,0,0,0.6);
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      z-index: 999;
-      visibility: hidden;
-      opacity: 0;
-      transition: .3s;
-    }
-    .modal.active { visibility: visible; opacity: 1; }
-    .modal-content {
-      background: var(--card);
-      padding: 24px;
-      border-radius: 12px;
-      max-width: 650px;
-      width: 90%;
-      max-height: 80vh;
-      overflow: auto;
-      box-shadow: 0 4px 30px rgba(0,0,0,0.5);
-    }
-    .modal-close {
-      float: right;
-      cursor: pointer;
-      color: var(--muted);
-      font-size: 20px;
-    }
-    .loading {
-      text-align: center;
-      margin-top: 40px;
-      color: var(--muted);
-    }
-    footer {
-      text-align: center;
-      padding: 30px;
-      color: var(--muted);
-      font-size: 14px;
-      border-top: 1px solid rgba(255,255,255,0.08);
-      margin-top: 40px;
-    }
-    /* Light mode */
-    body.light {
-      background: var(--light-bg);
-      color: var(--light-text);
-    }
-    body.light input, body.light select {
-      background: rgba(0,0,0,0.05);
-      color: var(--light-text);
-    }
-    body.light .news-item {
-      background: rgba(0,0,0,0.05);
-    }
-    body.light .modal-content {
-      background: #f7f7f7;
-      color: #111;
-    }
+    footer{color:var(--muted);font-size:13px;text-align:center;margin-top:28px}
+
+    /* utility */
+    .row{display:flex;gap:8px;align-items:center}
+    .muted{color:var(--muted)}
+
+    /* responsive */
+    @media (max-width:980px){main{grid-template-columns:1fr 300px} .search{min-width:220px}}
+    @media (max-width:760px){main{grid-template-columns:1fr} .controls{flex-direction:column;align-items:stretch} .search{width:100%}}
   </style>
 </head>
 <body>
-  <header>
-    <div class="logo">CryptoNews</div>
-    <div class="controls">
-      <input type="text" id="searchInput" placeholder="Cari berita...">
-      <select id="filterSelect">
-        <option value="">Semua</option>
-        <option value="bitcoin">Bitcoin</option>
-        <option value="ethereum">Ethereum</option>
-        <option value="defi">DeFi</option>
-        <option value="regulation">Regulasi</option>
-      </select>
-      <div class="dark-toggle" id="darkToggle">🌙</div>
-    </div>
-  </header>
-
   <div class="container">
-    <h1>Berita Crypto Terbaru</h1>
-    <div id="newsList" class="news-list"></div>
-    <div id="loading" class="loading">Memuat berita...</div>
-  </div>
+    <header>
+      <div class="brand">
+        <div class="logo"><span>RZ</span></div>
+        <div>
+          <h1>Crypto Rizz</h1>
+          <div class="tagline">Real-time crypto news, aggregated & filtered</div>
+        </div>
+      </div>
+      <div class="controls">
+        <div class="search" role="search">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden><path d="M21 21l-4.35-4.35" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          <input id="q" placeholder="Cari berita, koin, atau topik..." />
+          <button class="btn" onclick="clearSearch()">Clear</button>
+        </div>
+        <button class="btn" onclick="toggleDark()" title="Toggle theme">Theme</button>
+        <button class="btn primary" onclick="refreshFeed()">Refresh</button>
+      </div>
+    </header>
 
-  <footer>© 2025 CryptoNews — Semua data dari <a href="https://cryptopanic.com/" target="_blank" style="color:var(--accent)">CryptoPanic</a></footer>
+    <main>
+      <section class="feed" id="feed">
+        <!-- article cards appear here -->
+      </section>
 
-  <div id="newsModal" class="modal">
-    <div class="modal-content">
-      <span class="modal-close" id="modalClose">✕</span>
-      <h2 id="modalTitle"></h2>
-      <p id="modalMeta" style="color:var(--muted)"></p>
-      <p id="modalBody"></p>
-      <a id="modalLink" href="#" target="_blank" style="color:var(--accent);display:block;margin-top:12px;">Baca selengkapnya</a>
-    </div>
+      <aside>
+        <div class="panel">
+          <div class="row" style="justify-content:space-between"><strong>Filter & Sources</strong><span class="muted">v1.0</span></div>
+          <div style="margin-top:12px">
+            <label class="muted">Sentimen</label>
+            <div class="row" style="margin-top:8px">
+              <button class="chip" onclick="setSentiment('all')">Semua</button>
+              <button class="chip" onclick="setSentiment('positive')">Positif</button>
+              <button class="chip" onclick="setSentiment('negative')">Negatif</button>
+            </div>
+          </div>
+
+          <div style="margin-top:12px">
+            <label class="muted">Sumber populer</label>
+            <div class="sources" id="sources">
+              <!-- dynamic chips -->
+            </div>
+          </div>
+
+          <div style="margin-top:12px">
+            <label class="muted">Urutkan</label>
+            <div class="row" style="margin-top:8px">
+              <button class="chip" onclick="setSort('latest')">Terbaru</button>
+              <button class="chip" onclick="setSort('popular')">Popular</button>
+            </div>
+          </div>
+
+        </div>
+
+        <div style="height:14px"></div>
+        <div class="panel">
+          <strong>Top Koin</strong>
+          <div style="margin-top:10px" id="coins">
+            <!-- mini coin list -->
+          </div>
+        </div>
+      </aside>
+    </main>
+
+    <footer>
+      © <span id="year"></span> Crypto Rizz — built with ❤️. Example site for learning & demo.
+    </footer>
   </div>
 
   <script>
-    const list = document.getElementById('newsList');
-    const loading = document.getElementById('loading');
-    const modal = document.getElementById('newsModal');
-    const modalTitle = document.getElementById('modalTitle');
-    const modalMeta = document.getElementById('modalMeta');
-    const modalBody = document.getElementById('modalBody');
-    const modalLink = document.getElementById('modalLink');
-    const modalClose = document.getElementById('modalClose');
-    const searchInput = document.getElementById('searchInput');
-    const filterSelect = document.getElementById('filterSelect');
-    const darkToggle = document.getElementById('darkToggle');
+    // small client-side app to render a CryptoPanic-like feed
+    const state = {
+      articles: [],
+      filtered: [],
+      query: '',
+      sentiment: 'all',
+      sort: 'latest'
+    }
 
-    let allNews = [];
+    document.getElementById('year').textContent = new Date().getFullYear();
+    document.getElementById('q').addEventListener('input', e => { state.query = e.target.value; applyFilters(); });
 
-    async function fetchNews() {
-      try {
-        const proxy = 'https://api.allorigins.win/get?url=';
-        const target = encodeURIComponent('https://cryptopanic.com/api/v1/posts/?public=true');
-        const res = await fetch(proxy + target);
-        const data = await res.json();
-        const parsed = JSON.parse(data.contents);
-        allNews = parsed.results;
-        renderNews(allNews);
-      } catch (err) {
-        loading.textContent = '❌ Gagal memuat berita. Silakan refresh.';
-        console.error(err);
+    function clearSearch(){document.getElementById('q').value=''; state.query=''; applyFilters();}
+
+    function toggleDark(){
+      // simple theme toggle -- just changes root variables
+      const root = document.documentElement;
+      if(root.style.getPropertyValue('--bg') === ''){
+        root.style.setProperty('--bg','#0f1724');
+      } else {
+        // naive toggle: swap to light theme
+        if(root.style.getPropertyValue('--bg') === '#0f1724'){
+          root.style.setProperty('--bg','#f7fafc'); root.style.setProperty('--card','#ffffff'); root.style.setProperty('--muted','#52606d'); root.style.setProperty('--accent','#0ea5a4');
+          document.body.style.color='#012';
+        } else {
+          root.style.setProperty('--bg','#0f1724'); root.style.setProperty('--card','#0b1220'); root.style.setProperty('--muted','#9aa4b2'); root.style.setProperty('--accent','#6ee7b7');
+          document.body.style.color='#e6eef6';
+        }
       }
     }
 
-    function renderNews(newsArr) {
-      loading.style.display = 'none';
-      list.innerHTML = '';
-      newsArr.forEach(article => {
-        const div = document.createElement('div');
-        div.className = 'news-item';
-        div.innerHTML = `
-          <h3>${article.title}</h3>
-          <div class="meta">
-            ${article.domain || 'Sumber tidak diketahui'} • ${new Date(article.published_at).toLocaleString('id-ID')}
+    function setSentiment(s){ state.sentiment = s; applyFilters(); }
+    function setSort(s){ state.sort = s; applyFilters(); }
+
+    function renderArticles(list){
+      const feed = document.getElementById('feed'); feed.innerHTML='';
+      if(list.length===0){ feed.innerHTML='<div class="panel">Tidak ada artikel. Klik Refresh untuk muat contoh.</div>'; return }
+      list.forEach(a => {
+        const card = document.createElement('article'); card.className='card';
+        card.innerHTML = `
+          <img class="thumb" src="${a.image}" alt="thumb" onerror="this.style.opacity=.06;this.style.background='linear-gradient(90deg,#0b1220,#111827)'" />
+          <div style="flex:1">
+            <div class="meta">${a.source} · ${timeAgo(new Date(a.published))} · <span class="badge ${a.sentiment}">${a.sentiment}</span></div>
+            <h3 class="title"><a href="${a.url}" target="_blank" style="color:inherit;text-decoration:none">${a.title}</a></h3>
+            <p class="summary">${a.summary}</p>
           </div>
         `;
-        div.addEventListener('click', () => openModal(article));
-        list.appendChild(div);
+        feed.appendChild(card);
       });
     }
 
-    function openModal(article) {
-      modalTitle.textContent = article.title;
-      modalMeta.textContent = `${article.domain || 'Sumber tidak diketahui'} • ${new Date(article.published_at).toLocaleString('id-ID')}`;
-      modalBody.textContent = article.body || 'Klik tautan di bawah untuk membaca detail lengkapnya.';
-      modalLink.href = article.url;
-      modal.classList.add('active');
+    function timeAgo(date){
+      const s = Math.floor((Date.now()-date.getTime())/1000);
+      if(s<60) return s+ 's ago';
+      const m = Math.floor(s/60); if(m<60) return m+'m ago';
+      const h = Math.floor(m/60); if(h<24) return h+'h ago';
+      const d = Math.floor(h/24); return d+'d ago';
     }
 
-    modalClose.addEventListener('click', () => modal.classList.remove('active'));
-    modal.addEventListener('click', e => { if (e.target === modal) modal.classList.remove('active'); });
+    function applyFilters(){
+      let list = state.articles.slice();
+      if(state.query) {
+        const q = state.query.toLowerCase();
+        list = list.filter(a => (a.title+a.summary+a.source).toLowerCase().includes(q));
+      }
+      if(state.sentiment!=='all') list = list.filter(a => a.sentiment===state.sentiment);
+      if(state.sort==='latest') list.sort((a,b)=>new Date(b.published)-new Date(a.published));
+      if(state.sort==='popular') list.sort((a,b)=>b.score-a.score);
+      state.filtered = list; renderArticles(list);
+    }
 
-    searchInput.addEventListener('input', () => {
-      const q = searchInput.value.toLowerCase();
-      const filtered = allNews.filter(n => n.title.toLowerCase().includes(q));
-      renderNews(filtered);
-    });
+    function refreshFeed(){
+      // in a real site you would fetch from an API here.
+      // TODO: Replace fetchMockArticles with real fetch to NewsAPI / Crypto API.
+      fetchMockArticles().then(articles => { state.articles = articles; populateSources(); populateCoins(); applyFilters(); });
+    }
 
-    filterSelect.addEventListener('change', () => {
-      const val = filterSelect.value.toLowerCase();
-      const filtered = !val ? allNews : allNews.filter(n => n.title.toLowerCase().includes(val));
-      renderNews(filtered);
-    });
+    // -- Mock data generator (so the site works offline)
+    function fetchMockArticles(){
+      return new Promise(resolve => {
+        const now = Date.now();
+        const samples = [
+          {
+            title: 'Bitcoin menembus level resistensi utama — analis bullish',
+            summary: 'BTC menunjukkan kekuatan setelah penutupan mingguan yang kuat. Pelaku pasar sekarang menargetkan $40k sebagai level kunci.',
+            source: 'CoinDesk', url:'#', image:'https://picsum.photos/seed/1/400/300', published: now-1000*60*30, sentiment:'positive', score:88
+          },
+          {
+            title: 'Serangan phishing pada exchange lokal, pengguna disarankan lockdown',
+            summary: 'Tim keamanan exchange mengidentifikasi kelemahan pada proses KYC yang dieksploitasi oleh aktor berbahaya.',
+            source: 'TheBlock', url:'#', image:'https://picsum.photos/seed/2/400/300', published: now-1000*60*60*3, sentiment:'negative', score:63
+          },
+          {
+            title: 'Altcoin X meluncurkan mainnet dan tokenomics baru',
+            summary: 'Proyek X mengumumkan pembaruan besar pada protokol yang memungkinkan staking dan gas murah.',
+            source: 'CoinTelegraph', url:'#', image:'https://picsum.photos/seed/3/400/300', published: now-1000*60*60*24, sentiment:'positive', score:77
+          },
+          {
+            title: 'Regulator mempertimbangkan aturan baru untuk stablecoin',
+            summary: 'Diskusi parlemen berfokus pada perlindungan investor dan transparansi cadangan.',
+            source: 'Reuters', url:'#', image:'https://picsum.photos/seed/4/400/300', published: now-1000*60*60*26, sentiment:'negative', score:44
+          },
+          {
+            title: 'Exchange A daftar token dengan likuiditas rendah — waspada rug pull',
+            summary: 'Trader diingatkan untuk cek kontrak dan volume sebelum membeli token baru.',
+            source: 'Decrypt', url:'#', image:'https://picsum.photos/seed/5/400/300', published: now-1000*60*18, sentiment:'negative', score:51
+          }
+        ];
+        // duplicate with small randomization for demo
+        const extended = [];
+        for(let i=0;i<12;i++){
+          const base = samples[i % samples.length];
+          extended.push({ ...base, published: base.published - i*1000*60*15, title: base.title + (i?(' — #' + i):''), score: base.score - (i%3)*4 });
+        }
+        setTimeout(()=>resolve(extended),300);
+      });
+    }
 
-    darkToggle.addEventListener('click', () => {
-      document.body.classList.toggle('light');
-      darkToggle.textContent = document.body.classList.contains('light') ? '☀️' : '🌙';
-    });
+    function populateSources(){
+      const srcs = Array.from(new Set(state.articles.map(a=>a.source))).slice(0,12);
+      const el = document.getElementById('sources'); el.innerHTML='';
+      srcs.forEach(s=>{const b = document.createElement('button'); b.className='chip'; b.textContent=s; b.onclick=()=>filterSource(s); el.appendChild(b)});
+    }
+    function filterSource(s){ state.articles = state.articles.filter(a=>a.source===s); applyFilters(); }
 
-    fetchNews();
+    function populateCoins(){
+      // demo list — in a real build, fetch coin prices with CoinGecko API
+      const coins = [
+        {symbol:'BTC', price:'$39,512', change:'+2.4%'}, {symbol:'ETH', price:'$2,850', change:'-0.6%'}, {symbol:'XRP', price:'$0.61', change:'+1.1%'}
+      ];
+      const el = document.getElementById('coins'); el.innerHTML='';
+      coins.forEach(c=>{const d=document.createElement('div'); d.className='row'; d.style.justifyContent='space-between'; d.style.marginBottom='8px'; d.innerHTML=`<div>${c.symbol}</div><div class="muted">${c.price} <span class="muted">${c.change}</span></div>`; el.appendChild(d)});
+    }
+
+    // initialize
+    refreshFeed();
   </script>
 </body>
 </html>

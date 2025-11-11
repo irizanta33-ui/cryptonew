@@ -1,433 +1,315 @@
-from pathlib import Path
-# Retry writing files
-
-html = """<!DOCTYPE html>
-<html lang="en">
+<!doctype html>
+<html lang="id">
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>CryptoIntro — Learn Cryptocurrency</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="style.css" />
-  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <title>CryptoNews — Pengenalan & Berita Crypto</title>
+  <meta name="description" content="Situs informatif tentang berita kripto, panduan pemula, glossary, dan analisis ringkas." />
+  <link rel="icon" href="data:;base64,iVBORw0KGgo=" />
+  <style>
+    :root{
+      --bg:#0f1724; --card:#0b1320; --muted:#9aa7bf; --accent:#7c3aed; --glass: rgba(255,255,255,0.04);
+      --maxw:1100px;
+    }
+    *{box-sizing:border-box}
+    html,body{height:100%;margin:0;font-family:Inter,ui-sans-serif,system-ui,-apple-system,'Segoe UI',Roboto,'Helvetica Neue',Arial; background:linear-gradient(180deg,#071028 0%, #081927 100%); color:#e6eef8}
+    a{color:inherit}
+    .container{max-width:var(--maxw);margin:28px auto;padding:24px}
+
+    /* Top nav */
+    header{display:flex;gap:16px;align-items:center;justify-content:space-between}
+    .brand{display:flex;align-items:center;gap:12px}
+    .logo{width:48px;height:48px;border-radius:10px;background:linear-gradient(135deg,var(--accent),#3b82f6);display:flex;align-items:center;justify-content:center;font-weight:700;box-shadow:0 8px 30px rgba(124,58,237,0.18)}
+    nav{display:flex;gap:12px;align-items:center}
+    .btn{background:var(--glass);padding:8px 12px;border-radius:10px;border:1px solid rgba(255,255,255,0.04);cursor:pointer}
+    .btn.primary{background:linear-gradient(90deg,var(--accent),#4f46e5);color:white;border:none}
+
+    /* Hero */
+    .hero{display:grid;grid-template-columns:1fr 420px;gap:28px;margin-top:22px}
+    .card{background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));border-radius:16px;padding:20px;box-shadow:0 6px 30px rgba(2,6,23,0.6);border:1px solid rgba(255,255,255,0.03)}
+    h1{font-size:28px;margin:0 0 8px}
+    p.lead{color:var(--muted);margin:0 0 12px}
+
+    /* Search & filters */
+    .search{display:flex;gap:8px;align-items:center}
+    .search input{flex:1;padding:10px 12px;border-radius:10px;border:none;background:#061022;color:inherit}
+    .chips{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}
+    .chip{padding:6px 10px;border-radius:999px;background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.02);cursor:pointer}
+
+    /* News list */
+    .news-list{display:grid;gap:12px}
+    .news-item{display:flex;gap:12px;align-items:flex-start}
+    .thumb{width:120px;height:72px;border-radius:8px;background:linear-gradient(90deg,#111827,#0b1220);flex:0 0 120px;display:flex;align-items:center;justify-content:center;color:var(--muted);font-size:12px}
+    .meta{color:var(--muted);font-size:12px}
+    .headline{font-weight:600;margin:0}
+
+    /* Right column */
+    .stats{display:grid;gap:12px}
+    .stat{display:flex;justify-content:space-between;align-items:center;padding:12px;border-radius:10px;background:rgba(255,255,255,0.02)}
+
+    /* Sections */
+    section{margin-top:18px}
+    .grid-3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px}
+
+    /* Footer */
+    footer{margin-top:28px;padding:18px;border-radius:12px;background:linear-gradient(180deg, rgba(255,255,255,0.01), rgba(255,255,255,0));display:flex;justify-content:space-between;align-items:center}
+
+    /* Responsive */
+    @media (max-width:980px){.hero{grid-template-columns:1fr} .grid-3{grid-template-columns:1fr} .thumb{display:none}}
+
+    /* Accordion */
+    details{background:rgba(255,255,255,0.02);padding:10px;border-radius:8px}
+
+    /* code block */
+    pre{background:#071126;padding:12px;border-radius:8px;overflow:auto}
+
+    /* small utilities */
+    .muted{color:var(--muted)}
+    .kicker{font-size:12px;text-transform:uppercase;color:var(--muted);letter-spacing:0.08em}
+
+  </style>
 </head>
 <body>
-  <div class="site">
-    <header class="nav" role="banner">
-      <div class="container nav-inner">
-        <div class="brand">
-          <div class="logo">CR</div>
-          <div class="brand-text">
-            <div class="brand-title">CryptoIntro</div>
-            <div class="brand-sub">Learn crypto basics — clearly</div>
-          </div>
-        </div>
-
-        <button id="navToggle" class="nav-toggle" aria-expanded="false" aria-label="Toggle navigation">☰</button>
-
-        <nav class="nav-links" id="navLinks" role="navigation">
-          <a href="#home" class="nav-link">Home</a>
-          <a href="#about" class="nav-link">About</a>
-          <a href="#tokenomics" class="nav-link">Tokenomics</a>
-          <a href="#simulator" class="nav-link">Simulator</a>
-          <a href="#faq" class="nav-link">FAQ</a>
-        </nav>
-
-        <div class="nav-actions">
-          <button id="themeToggle" class="btn btn-ghost" aria-pressed="false">🌙</button>
-          <a href="#simulator" class="btn btn-primary">Try Simulator</a>
+  <div class="container">
+    <header>
+      <div class="brand">
+        <div class="logo">CN</div>
+        <div>
+          <div style="font-weight:700">CryptoNews</div>
+          <div style="font-size:12px;color:var(--muted)">Berita • Panduan • Glossary</div>
         </div>
       </div>
+      <nav>
+        <div class="kicker">Bahasa: ID</div>
+        <button class="btn" id="themeToggle">Toggle Theme</button>
+        <button class="btn primary" id="subscribeBtn">Subscribe</button>
+      </nav>
     </header>
 
-    <main>
-      <section id="home" class="hero container">
-        <div class="hero-left">
-          <h1 class="hero-title">Understand Crypto — From Blockchain to Tokenomics</h1>
-          <p class="hero-lead">Interactive lessons, visual tokenomics, and a live mock price simulator to practice trading risk-free.</p>
-          <div class="hero-ctas">
-            <a class="btn btn-primary" href="#simulator">Start Learning</a>
-            <a class="btn btn-outline" href="#tokenomics">Explore Tokenomics</a>
-          </div>
-          <div class="hero-stats">
-            <div class="stat">
-              <div class="stat-label">Live mock BTC</div>
-              <div id="priceValue" class="stat-value">$30,000</div>
-            </div>
-            <div class="stat">
-              <div class="stat-label">Net worth (demo)</div>
-              <div id="netWorth" class="stat-value">$10,000</div>
-            </div>
-          </div>
-        </div>
-        <div class="hero-right card">
-          <canvas id="heroChart" aria-hidden="true"></canvas>
-        </div>
-      </section>
+    <div class="hero">
+      <div class="card">
+        <div class="kicker">Terbaru</div>
+        <h1>Semua tentang cryptocurrency — berita & pemahaman</h1>
+        <p class="lead">Ringkasan berita terbaru, panduan pemula, istilah penting, dan contoh singkat cara membaca grafik. Cocok untuk pemula sampai menengah.</p>
 
-      <section id="about" class="block container reveal">
-        <div class="block-grid">
-          <div class="card">
-            <h3>What is Cryptocurrency?</h3>
-            <p>Cryptocurrency is digital money secured by cryptography and recorded on a blockchain. Decentralization means the network — not a single company — validates transactions.</p>
-          </div>
-          <div class="card">
-            <h3>Wallets & Keys</h3>
-            <p>Your private key signs transactions. Never share it. Wallets manage keys and addresses; addresses are safe to share to receive funds.</p>
-          </div>
-          <div class="card">
-            <h3>Smart Contracts</h3>
-            <p>Self-executing programs on blockchains that enable tokens, decentralized apps and programmable money.</p>
-          </div>
+        <div class="search">
+          <input id="q" placeholder="Cari berita atau konsep (contoh: bitcoin, defi, nft)" />
+          <button class="btn" id="doSearch">Cari</button>
         </div>
-      </section>
-
-      <section id="tokenomics" class="container reveal">
-        <div class="section-head">
-          <h2>Tokenomics Example</h2>
-          <p class="muted">A transparent allocation and clear emission schedule matter. Here's an example distribution.</p>
+        <div class="chips" id="chipBox">
+          <div class="chip" data-filter="all">Semua</div>
+          <div class="chip" data-filter="news">Berita</div>
+          <div class="chip" data-filter="guide">Panduan</div>
+          <div class="chip" data-filter="glossary">Glossary</div>
+          <div class="chip" data-filter="analysis">Analisis</div>
         </div>
 
-        <div class="split">
-          <div class="card">
-            <ul class="token-list">
-              <li><span>Team</span><span>15%</span></li>
-              <li><span>Ecosystem</span><span>30%</span></li>
-              <li><span>Treasury</span><span>25%</span></li>
-              <li><span>Airdrop</span><span>10%</span></li>
-              <li><span>Liquidity</span><span>20%</span></li>
-            </ul>
-          </div>
-          <div class="card chart-card">
-            <canvas id="tokenChart" aria-hidden="true"></canvas>
-          </div>
-        </div>
-      </section>
-
-      <section id="simulator" class="container reveal">
-        <div class="section-head">
-          <h2>Interactive Price Simulator</h2>
-          <p class="muted">Practice position sizing and risk management with mock funds (no real money involved).</p>
-        </div>
-
-        <div class="simulator-panel card">
-          <div class="sim-left">
-            <div class="sim-row">
-              <div class="label">Mock BTC Price</div>
-              <div id="priceDisplay" class="value">$30,000</div>
+        <section>
+          <div class="kicker">Ringkasan cepat</div>
+          <div style="display:flex;gap:12px;margin-top:10px;flex-wrap:wrap">
+            <div style="min-width:150px;padding:12px;border-radius:10px;background:rgba(255,255,255,0.02)">
+              <div style="font-weight:700">Bitcoin</div>
+              <div class="muted">Store of value & jaringan terbesar</div>
             </div>
-            <div class="sim-row">
-              <div class="label">Cash</div>
-              <div id="cashDisplay" class="value">$10,000</div>
+            <div style="min-width:150px;padding:12px;border-radius:10px;background:rgba(255,255,255,0.02)">
+              <div style="font-weight:700">Ethereum</div>
+              <div class="muted">Smart contract & ekosistem DeFi</div>
             </div>
-            <div class="sim-row">
-              <div class="label">Owned</div>
-              <div id="ownedDisplay" class="value">0.000000 BTC</div>
-            </div>
-            <div class="sim-actions">
-              <button class="btn" id="buy100">Buy $100</button>
-              <button class="btn" id="buy1000">Buy $1,000</button>
-              <button class="btn btn-ghost" id="sell25">Sell 25%</button>
-              <button class="btn btn-ghost" id="sellAll">Sell All</button>
+            <div style="min-width:150px;padding:12px;border-radius:10px;background:rgba(255,255,255,0.02)">
+              <div style="font-weight:700">DeFi</div>
+              <div class="muted">Keuangan terdesentralisasi</div>
             </div>
           </div>
-          <div class="sim-right">
-            <canvas id="priceChart"></canvas>
-          </div>
-        </div>
-      </section>
+        </section>
 
-      <section id="faq" class="container reveal">
-        <div class="section-head">
-          <h2>Frequently Asked Questions</h2>
-        </div>
-        <div class="faq-grid">
-          <details class="faq card"><summary>Is cryptocurrency safe?</summary><p class="muted">Crypto can be safe when you follow best practices: hardware wallets, 2FA for exchanges, and never share private keys.</p></details>
-          <details class="faq card"><summary>How do I start learning?</summary><p class="muted">Start with small amounts, practice on testnets, read official docs, and never invest more than you can afford to lose.</p></details>
-          <details class="faq card"><summary>Are tokens the same as coins?</summary><p class="muted">Coins typically refer to native blockchain assets (like BTC), tokens are assets built on platforms (like ERC-20 on Ethereum).</p></details>
-        </div>
-      </section>
-    </main>
+        <section>
+          <div class="kicker">FAQ Cepat</div>
+          <details>
+            <summary>Apakah crypto aman?</summary>
+            <p class="muted">Crypto membawa risiko tinggi. Amankan private key, gunakan hardware wallet untuk simpanan besar, dan jangan invest lebih dari yang Anda toleransi.</p>
+          </details>
+          <details>
+            <summary>Bagaimana cara beli Bitcoin?</summary>
+            <p class="muted">Gunakan exchange teregulasi, lakukan KYC, transfer dana, dan beli pasangan BTC/IDR atau BTC/USDT tergantung platform.</p>
+          </details>
+        </section>
 
-    <footer class="footer">
-      <div class="container footer-inner">
-        <div>© 2025 CryptoIntro — educational only, not financial advice</div>
-        <div class="footer-links"><a href="#privacy">Privacy</a>·<a href="#terms">Terms</a></div>
       </div>
+
+      <aside>
+        <div class="stats card">
+          <div class="stat"><div>
+            <div style="font-weight:700">Market Cap (contoh)</div>
+            <div class="muted">Per 1 Jan 2025 - contoh data</div>
+          </div><div style="font-weight:700">$1.2T</div></div>
+
+          <div class="stat"><div>
+            <div style="font-weight:700">Top Gainers</div>
+            <div class="muted">24h</div>
+          </div><div style="color:#34d399">+12%</div></div>
+
+          <div class="card">
+            <div class="kicker">Subscribe untuk update</div>
+            <p class="muted">Masukkan email untuk menerima ringkasan mingguan (demo).</p>
+            <input id="email" placeholder="email@contoh.com" style="width:100%;padding:10px;margin-top:8px;border-radius:8px;border:none;background:#061022;color:inherit" />
+            <button class="btn primary" style="width:100%;margin-top:8px" id="subFormBtn">Daftar</button>
+          </div>
+        </div>
+      </aside>
+    </div>
+
+    <section class="card">
+      <div class="kicker">Berita Terbaru</div>
+      <div class="news-list" id="newsList">
+        <!-- News items injected by JS -->
+      </div>
+      <div style="display:flex;justify-content:center;margin-top:12px">
+        <button class="btn" id="loadMore">Muat Lebih Banyak</button>
+      </div>
+    </section>
+
+    <section class="card">
+      <div class="kicker">Panduan & Tutorial</div>
+      <div class="grid-3" style="margin-top:12px">
+        <div>
+          <h3>Mulai — 5 langkah</h3>
+          <ol style="color:var(--muted)">
+            <li>Buat wallet (eg. MetaMask) — catat seed phrase.</li>
+            <li>Beli crypto di exchange tepercaya.</li>
+            <li>Pahami fees & slippage saat trading.</li>
+            <li>Gunakan hardware wallet untuk jangka panjang.</li>
+            <li>Belajar membaca orderbook dan chart.</li>
+          </ol>
+        </div>
+        <div>
+          <h3>Contoh transaksi</h3>
+          <pre><code>1. Buka exchange -> Pilih pasangan -> Masukkan jumlah -> Konfirmasi</code></pre>
+        </div>
+        <div>
+          <h3>Keamanan</h3>
+          <p class="muted">Aktifkan 2FA, verifikasi URL, waspadai phishing, dan verifikasi kontrak token sebelum berinteraksi.</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="card">
+      <div class="kicker">Glossary</div>
+      <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:10px">
+        <div style="min-width:160px">
+          <h4>Wallet</h4>
+          <p class="muted">Perangkat/layanan untuk menyimpan private key.</p>
+        </div>
+        <div style="min-width:160px">
+          <h4>Smart Contract</h4>
+          <p class="muted">Program berjalan di blockchain (contoh: Ethereum).</p>
+        </div>
+        <div style="min-width:160px">
+          <h4>Liquidity</h4>
+          <p class="muted">Kemudahan membeli/menjual aset tanpa slippage besar.</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="card">
+      <div class="kicker">Contoh Integrasi Berita (placeholder)</div>
+      <p class="muted">Bagian ini bisa dihubungkan ke API berita (contoh: CryptoPanic, NewsAPI) untuk menarik headline terbaru. Contoh pseudo-code ada di bawah:</p>
+      <pre><code>// fetch('https://newsapi.org/v2/everything?q=crypto&apiKey=YOUR_KEY')
+//  .then(r=>r.json()).then(data=>renderNews(data.articles))
+</code></pre>
+    </section>
+
+    <footer>
+      <div>© CryptoNews — Dibuat untuk edukasi. Jangan jadikan ini advice finansial.</div>
+      <div class="muted">Butuh fitur: live feed, multi-bahasa, atau push ke GitHub? Katakan saja.</div>
     </footer>
   </div>
 
-  <script src="script.js"></script>
+  <script>
+    // sample dataset (replace with real API responses)
+    const sampleNews = [
+      {id:1,cat:'news',title:'Bitcoin mencapai level psikologis baru',time:'Nov 10, 2025',src:'Kontributor',summary:'Bitcoin menunjukkan kenaikan signifikan setelah rilis data ekonomi.'},
+      {id:2,cat:'analysis',title:'Analisis on-chain Ethereum',time:'Nov 9, 2025',src:'Analyst',summary:'Aktivitas smart contract meningkat pada protokol DeFi tertentu.'},
+      {id:3,cat:'guide',title:'Cara aman menyimpan seed phrase',time:'Nov 7, 2025',src:'Security Team',summary:'Panduan langkah demi langkah menyimpan seed phrase secara offline.'},
+      {id:4,cat:'news',title:'Perkembangan regulasi crypto di Asia Tenggara',time:'Nov 5, 2025',src:'Reporter',summary:'Negara-negara regional mempertimbangkan aturan baru untuk exchange.'}
+    ];
+
+    const newsList = document.getElementById('newsList');
+    const q = document.getElementById('q');
+
+    function renderNews(items){
+      newsList.innerHTML = '';
+      items.forEach(it => {
+        const el = document.createElement('div'); el.className='news-item card';
+        el.innerHTML = `
+          <div class="thumb">${it.cat.toUpperCase()}</div>
+          <div style="flex:1">
+            <div class="meta">${it.src} • ${it.time}</div>
+            <h3 class="headline">${it.title}</h3>
+            <div class="muted">${it.summary}</div>
+          </div>
+        `;
+        newsList.appendChild(el);
+      })
+    }
+
+    // initial render
+    renderNews(sampleNews.slice(0,3));
+
+    document.getElementById('loadMore').addEventListener('click', ()=>{
+      // in real app: fetch more from server
+      renderNews(sampleNews);
+    })
+
+    document.getElementById('doSearch').addEventListener('click', ()=>{
+      const term = q.value.trim().toLowerCase();
+      const filtered = sampleNews.filter(n=> n.title.toLowerCase().includes(term) || n.summary.toLowerCase().includes(term));
+      renderNews(filtered.length?filtered:[]);
+    });
+
+    document.querySelectorAll('.chip').forEach(c=>c.addEventListener('click', e=>{
+      const f = e.currentTarget.dataset.filter;
+      if(f==='all') renderNews(sampleNews);
+      else renderNews(sampleNews.filter(n=>n.cat===f));
+    }))
+
+    // theme toggle (demo: light/dark)
+    const themeBtn = document.getElementById('themeToggle');
+    themeBtn.addEventListener('click', ()=>{
+      if(document.documentElement.style.getPropertyValue('--bg') === ''){
+        document.documentElement.style.setProperty('--bg','#ffffff');
+        document.documentElement.style.setProperty('--card','#f8fafc');
+        document.documentElement.style.setProperty('--muted','#4b5563');
+        document.documentElement.style.setProperty('--accent','#7c3aed');
+        document.body.style.color='#0b1220';
+      } else {
+        document.documentElement.style.setProperty('--bg','#0f1724');
+        document.documentElement.style.setProperty('--card','#0b1320');
+        document.documentElement.style.setProperty('--muted','#9aa7bf');
+        document.body.style.color='#e6eef8';
+        document.documentElement.style.setProperty('--bg','');
+      }
+      // simple animation
+      document.querySelectorAll('.card').forEach(c=>{c.style.transform='translateY(0)';});
+    });
+
+    // subscribe demo
+    document.getElementById('subFormBtn').addEventListener('click', ()=>{
+      const e = document.getElementById('email').value.trim();
+      if(!e) return alert('Masukkan email dulu.');
+      alert('Terima kasih! (demo) — Email: '+e);
+    })
+
+    document.getElementById('subscribeBtn').addEventListener('click', ()=>{
+      window.scrollTo({top:document.body.scrollHeight,behavior:'smooth'});
+      document.getElementById('email').focus();
+    })
+
+    // accessibility tweaks
+    document.addEventListener('keydown', e=>{
+      if(e.key==='/' && document.activeElement.tagName !== 'INPUT'){
+        e.preventDefault(); q.focus();
+      }
+    })
+  </script>
 </body>
 </html>
-"""
-
-css = """/* style.css — Professional, clean UI for CryptoIntro */
-
-:root{
-  --bg: #f6f8fb;
-  --card: #ffffff;
-  --muted: #6b7280;
-  --accent: #6366f1;
-  --accent-2: #06b6d4;
-  --glass: rgba(2,6,23,0.03);
-  --radius: 12px;
-  --max-width: 1100px;
-}
-
-/* Reset & base */
-*{box-sizing:border-box}
-html,body{height:100%}
-body{
-  margin:0;
-  font-family: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial;
-  background:var(--bg);
-  color:#071433;
-  -webkit-font-smoothing:antialiased;
-  -moz-osx-font-smoothing:grayscale;
-  transition: background .25s ease, color .25s ease;
-  line-height:1.5;
-}
-
-.dark body{background:#071428; color:#cfe7ff}
-
-/* layout */
-.container{max-width:var(--max-width); margin:0 auto; padding:1.25rem}
-
-/* NAV */
-.nav{position:sticky; top:0; z-index:40; backdrop-filter: blur(8px); background: rgba(255,255,255,0.6); border-bottom: 1px solid rgba(2,6,23,0.04)}
-.dark .nav{background: rgba(2,6,23,0.45); border-bottom:1px solid rgba(255,255,255,0.04)}
-.nav-inner{display:flex; align-items:center; gap:1rem; justify-content:space-between; padding:.6rem 0}
-.brand{display:flex; align-items:center; gap:0.75rem}
-.logo{width:48px; height:48px; border-radius:10px; display:flex; align-items:center; justify-content:center; background:linear-gradient(135deg,var(--accent),var(--accent-2)); color:white; font-weight:700}
-.brand-title{font-weight:700}
-.brand-sub{font-size:.78rem; color:var(--muted)}
-
-/* nav responsiveness */
-.nav-links{display:flex; gap:1rem; align-items:center}
-.nav-link{color:inherit; text-decoration:none; font-weight:500; padding:.45rem .6rem; border-radius:8px}
-.nav-link:hover{background:rgba(99,102,241,0.08)}
-
-.nav-actions{display:flex; gap:.5rem; align-items:center}
-.nav-toggle{display:none}
-
-/* Buttons */
-.btn{padding:.6rem .9rem; border-radius:10px; border:1px solid transparent; background:transparent; cursor:pointer; font-weight:600}
-.btn-primary{background:linear-gradient(90deg,var(--accent),var(--accent-2)); color:white; box-shadow:0 6px 18px rgba(99,102,241,.12)}
-.btn-outline{border:1px solid rgba(2,6,23,0.06)}
-.btn-ghost{background:transparent; border:1px solid rgba(2,6,23,0.06)}
-
-/* Hero */
-.hero{display:grid; grid-template-columns:1fr 420px; gap:2rem; align-items:center; padding-top:2.5rem; padding-bottom:2.5rem}
-.hero-title{font-size:2rem; margin:0 0 .5rem; line-height:1.05}
-.hero-lead{color:var(--muted); margin:0 0 1rem}
-.hero-ctas{display:flex; gap:0.75rem; margin-bottom:1rem}
-.hero-stats{display:flex; gap:1rem; margin-top:1rem}
-.stat{background:var(--glass); padding:.6rem .9rem; border-radius:10px; min-width:140px}
-.stat-label{font-size:.8rem; color:var(--muted)}
-.stat-value{font-weight:700; margin-top:.25rem}
-
-/* Cards and sections */
-.card{background:var(--card); border-radius:var(--radius); padding:1rem; box-shadow:0 8px 30px rgba(2,6,23,0.04)}
-.dark .card{background:linear-gradient(180deg,#071428,#081029); box-shadow:0 8px 30px rgba(2,6,23,0.6); color:#cfe7ff}
-
-.block{padding-top:0.75rem; padding-bottom:0.75rem}
-.block-grid{display:grid; grid-template-columns:repeat(3,1fr); gap:1rem}
-
-.section-head{margin-bottom:1rem}
-.section-head h2{margin:0}
-.muted{color:var(--muted)}
-
-/* tokenomics */
-.split{display:flex; gap:1rem}
-.token-list{list-style:none; padding:0; margin:0}
-.token-list li{display:flex; justify-content:space-between; padding:.6rem 0; border-bottom:1px solid rgba(2,6,23,0.04)}
-
-/* simulator */
-.simulator-panel{display:flex; gap:1rem; align-items:stretch}
-.sim-left{flex:0 0 320px}
-.sim-right{flex:1}
-.sim-row{display:flex; justify-content:space-between; padding:.35rem 0}
-.sim-actions{display:flex; gap:.5rem; flex-wrap:wrap; margin-top:.5rem}
-
-/* FAQ */
-.faq-grid{display:grid; grid-template-columns:repeat(3,1fr); gap:1rem}
-.faq summary{cursor:pointer; list-style:none}
-.faq p{margin:0; color:var(--muted)}
-
-/* Footer */
-.footer{padding:2rem 0; border-top:1px solid rgba(2,6,23,0.04); margin-top:2rem; color:var(--muted)}
-
-/* responsive */
-@media (max-width:1000px){
-  .hero{grid-template-columns:1fr; padding:1.25rem 0}
-  .block-grid{grid-template-columns:1fr 1fr}
-  .split{flex-direction:column}
-  .faq-grid{grid-template-columns:1fr}
-  .nav-links{display:none}
-  .nav-toggle{display:block}
-}
-
-@media (max-width:600px){
-  .block-grid{grid-template-columns:1fr}
-  .brand-sub{display:none}
-}
-
-/* reveal animation */
-.reveal{opacity:0; transform:translateY(10px); transition:all .6s cubic-bezier(.2,.9,.3,1)}
-.reveal.show{opacity:1; transform:none}
-"""
-
-js = """// script.js — Professional interactive behaviors for CryptoIntro
-
-// Utilities
-const qs = sel => document.querySelector(sel);
-const qsa = sel => Array.from(document.querySelectorAll(sel));
-
-// NAV toggle for small screens
-const navToggle = qs('#navToggle');
-const navLinks = qs('#navLinks');
-navToggle?.addEventListener('click', () => {
-  const expanded = navToggle.getAttribute('aria-expanded') === 'true';
-  navToggle.setAttribute('aria-expanded', String(!expanded));
-  navLinks.style.display = expanded ? '' : 'flex';
-});
-
-// Theme toggle with persistence
-const themeToggle = qs('#themeToggle');
-const userPref = localStorage.getItem('ct_theme');
-let dark = userPref ? userPref === 'dark' : (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches);
-if(dark) document.documentElement.classList.add('dark');
-themeToggle.textContent = dark ? '☀️' : '🌙';
-themeToggle.addEventListener('click', () => {
-  dark = !dark;
-  document.documentElement.classList.toggle('dark', dark);
-  themeToggle.textContent = dark ? '☀️' : '🌙';
-  localStorage.setItem('ct_theme', dark ? 'dark' : 'light');
-});
-
-// IntersectionObserver for reveal on scroll
-const observer = new IntersectionObserver((entries)=>{
-  entries.forEach(e=>{
-    if(e.isIntersecting) e.target.classList.add('show');
-  });
-},{threshold:0.15});
-qsa('.reveal').forEach(el => observer.observe(el));
-
-// Chart: Hero mini chart
-const heroCtx = qs('#heroChart').getContext('2d');
-const heroChart = new Chart(heroCtx, {
-  type: 'line',
-  data: {
-    labels: Array.from({length:20},(_,i)=>i+1),
-    datasets:[{label:'Transactions',data:Array.from({length:20},()=>1000+Math.random()*400),borderColor:'#6366f1',pointRadius:0,fill:true,backgroundColor:'rgba(99,102,241,0.08)'}]
-  },
-  options:{responsive:true, maintainAspectRatio:false, plugins:{legend:{display:false}}, scales:{x:{display:false}}}
-});
-
-// Tokenomics pie
-const tokenCtx = qs('#tokenChart').getContext('2d');
-const tokenChart = new Chart(tokenCtx, {
-  type:'doughnut',
-  data:{
-    labels:['Team','Ecosystem','Treasury','Airdrop','Liquidity'],
-    datasets:[{data:[15,30,25,10,20], backgroundColor:['#6366f1','#06b6d4','#10b981','#f59e0b','#ef4444'], hoverOffset:6}]
-  },
-  options:{responsive:true, plugins:{legend:{position:'bottom'}}}
-});
-
-// Price simulator logic and chart
-let price = 30000;
-let cash = 10000;
-let owned = 0;
-
-const priceDisplay = qs('#priceDisplay');
-const cashDisplay = qs('#cashDisplay');
-const ownedDisplay = qs('#ownedDisplay');
-const netWorthDisplay = qs('#netWorth') || null;
-const priceValue = qs('#priceValue') || null;
-
-const priceCtx = qs('#priceChart').getContext('2d');
-const priceChart = new Chart(priceCtx, {
-  type:'line',
-  data:{labels:[], datasets:[{label:'Price', data:[], borderColor:'#6366f1', tension:0.2, pointRadius:0}]},
-  options:{responsive:true, plugins:{legend:{display:false}}, scales:{x:{display:false}}}
-});
-
-function pushPrice(p){
-  const data = priceChart.data;
-  data.labels.push('');
-  data.datasets[0].data.push(p);
-  if(data.labels.length>60){data.labels.shift(); data.datasets[0].data.shift()}
-  priceChart.update('none');
-}
-
-function randomStep(){
-  const change = (Math.random()-0.48) * price * 0.007; // smaller volatility
-  price = Math.max(0.1, Math.round((price+change)*100)/100);
-  pushPrice(price);
-  updateDisplays();
-}
-
-function updateDisplays(){
-  if(priceDisplay) priceDisplay.textContent = `$${price.toLocaleString()}`;
-  if(priceValue) priceValue.textContent = `$${price.toLocaleString()}`;
-  if(cashDisplay) cashDisplay.textContent = `$${cash.toLocaleString()}`;
-  if(ownedDisplay) ownedDisplay.textContent = `${owned.toFixed(6)} BTC`;
-  if(netWorthDisplay) netWorthDisplay.textContent = `$${(cash + owned*price).toLocaleString()}`;
-}
-
-setInterval(randomStep, 1500);
-updateDisplays();
-
-// Buy/sell functions with small UI feedback
-function buy(amount){
-  const spend = Math.min(amount, cash);
-  const qty = spend/price;
-  cash = Math.round((cash - spend)*100)/100;
-  owned = Math.round((owned + qty)*1e6)/1e6;
-  updateDisplays();
-  flashCard('Bought '+qty.toFixed(6)+' BTC');
-}
-
-function sell(percent){
-  const qty = owned * percent;
-  const proceeds = Math.round(qty*price*100)/100;
-  owned = Math.round((owned - qty)*1e6)/1e6;
-  cash = Math.round((cash + proceeds)*100)/100;
-  updateDisplays();
-  flashCard('Sold '+qty.toFixed(6)+' BTC');
-}
-
-// Attach buttons
-qs('#buy100')?.addEventListener('click', ()=>buy(100));
-qs('#buy1000')?.addEventListener('click', ()=>buy(1000));
-qs('#sell25')?.addEventListener('click', ()=>sell(0.25));
-qs('#sellAll')?.addEventListener('click', ()=>sell(1));
-
-// small toast/flash feedback
-function flashCard(msg){
-  const el = document.createElement('div');
-  el.textContent = msg;
-  el.style.position='fixed'; el.style.right='20px'; el.style.bottom='20px';
-  el.style.padding='10px 14px'; el.style.background='rgba(99,102,241,0.95)'; el.style.color='#fff';
-  el.style.borderRadius='8px'; el.style.boxShadow='0 8px 24px rgba(99,102,241,0.12)';
-  document.body.appendChild(el);
-  setTimeout(()=>el.style.opacity='0',1600);
-  setTimeout(()=>el.remove(),2200);
-}
-
-// accessibility: keyboard nav
-qsa('.nav-link').forEach(a=>a.addEventListener('keydown', e=>{ if(e.key==='Enter') a.click() }));
-"""
-
-# write files
-base = Path("/mnt/data")
-(base / "index.html").write_text(html, encoding="utf-8")
-(base / "style.css").write_text(css, encoding="utf-8")
-(base / "script.js").write_text(js, encoding="utf-8")
-
-{"index": str(base / "index.html"), "style": str(base / "style.css"), "script": str(base / "script.js")}
-

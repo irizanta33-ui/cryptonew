@@ -1,86 +1,146 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>CryptoIntro | Learn Cryptocurrency Basics</title>
-  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@3.4.1/dist/tailwind.min.css" rel="stylesheet">
-  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-  <link rel="stylesheet" href="style.css">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>CryptoIntro — Learn Cryptocurrency Basics</title>
+  <link rel="stylesheet" href="style.css" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 </head>
-<body class="bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 transition-colors duration-500">
-
-  <header class="sticky top-0 z-50 bg-white/70 dark:bg-gray-900/70 backdrop-blur border-b border-gray-200 dark:border-gray-700">
-    <div class="max-w-6xl mx-auto px-6 py-4 flex justify-between items-center">
-      <h1 class="text-2xl font-bold bg-gradient-to-r from-indigo-500 to-sky-400 bg-clip-text text-transparent">CryptoIntro</h1>
-      <nav class="flex gap-4 text-sm font-medium">
-        <a href="#about" class="hover:underline">About</a>
-        <a href="#tokenomics" class="hover:underline">Tokenomics</a>
-        <a href="#simulator" class="hover:underline">Simulator</a>
-        <a href="#faq" class="hover:underline">FAQ</a>
-      </nav>
-      <button id="toggleDark" class="px-3 py-1 border rounded-lg text-sm">🌗</button>
+<body>
+  <header>
+    <div class="logo">
+      <div class="logo-icon">CR</div>
+      <div>
+        <div class="title">CryptoIntro</div>
+        <div class="subtitle">Learn crypto fundamentals — simple, safe, smart</div>
+      </div>
     </div>
+    <nav>
+      <a href="#what">What is Crypto</a>
+      <a href="#how">How it Works</a>
+      <a href="#tokenomics">Tokenomics</a>
+      <a href="#simulator">Simulator</a>
+      <button id="toggle-theme" class="toggle">Dark</button>
+    </nav>
   </header>
 
-  <section class="max-w-6xl mx-auto px-6 py-16 grid lg:grid-cols-2 gap-10 items-center">
-    <div>
-      <h2 class="text-5xl font-extrabold mb-4">Discover the Future of Money</h2>
-      <p class="text-gray-600 dark:text-gray-300 mb-6">
-        Learn how cryptocurrency works — from blockchain basics to tokenomics — in an easy, visual way.
+  <main>
+    <section class="hero">
+      <div>
+        <h2>Understand Crypto — From Blocks to Tokens</h2>
+        <p class="lead">
+          A guided, interactive introduction to how blockchain, cryptocurrencies, and token economies work — no jargon, just clarity.
+        </p>
+        <div class="hero-btns">
+          <a href="#simulator" class="btn-primary">Start Learning</a>
+          <a href="#tokenomics" class="btn-outline">Explore Tokenomics</a>
+        </div>
+        <p class="live-price">Live mock BTC price: <span id="price-value">$30,000</span></p>
+      </div>
+      <div class="card">
+        <h4>Quick Path</h4>
+        <ol>
+          <li>1. What is a blockchain?</li>
+          <li>2. How transactions and wallets work</li>
+          <li>3. Consensus & decentralization</li>
+          <li>4. Tokens and tokenomics</li>
+          <li>5. Safety & next steps</li>
+        </ol>
+      </div>
+    </section>
+
+    <section id="what">
+      <h3>What is Cryptocurrency?</h3>
+      <p>
+        Cryptocurrency is digital money secured by cryptography and recorded on a blockchain. Instead of a single bank controlling the ledger, many participants verify transactions — that’s decentralization.
       </p>
-      <a href="#about" class="px-5 py-2 bg-indigo-600 text-white rounded-lg shadow hover:bg-indigo-700">Start Learning</a>
-    </div>
-    <canvas id="heroChart" height="200"></canvas>
-  </section>
+      <div class="grid grid-3">
+        <div class="card">
+          <h4>Blockchain</h4>
+          <p>A linked chain of blocks. Each block contains transactions and a reference to the previous block — making tampering expensive.</p>
+        </div>
+        <div class="card">
+          <h4>Wallets & Keys</h4>
+          <p>Your private key signs transactions — keep it secret. Your public address is what you share to receive funds.</p>
+        </div>
+        <div class="card">
+          <h4>Try It</h4>
+          <p>Simulate sending tokens and see how prices fluctuate in the interactive section below.</p>
+        </div>
+      </div>
+    </section>
 
-  <section id="about" class="max-w-6xl mx-auto px-6 py-16">
-    <h3 class="text-3xl font-bold mb-6">What is Cryptocurrency?</h3>
-    <p class="text-gray-600 dark:text-gray-300 mb-4">
-      Cryptocurrency is a digital currency that uses blockchain technology for secure and transparent transactions.
-    </p>
-    <ul class="list-disc list-inside space-y-2 text-gray-700 dark:text-gray-400">
-      <li><b>Blockchain:</b> A distributed ledger that records all transactions.</li>
-      <li><b>Decentralization:</b> No central authority; the network validates transactions.</li>
-      <li><b>Wallets & Keys:</b> Private keys sign transactions, while public addresses receive funds.</li>
-    </ul>
-  </section>
+    <section id="how">
+      <h3>How It Works — A Short Walkthrough</h3>
+      <div class="grid grid-3">
+        <div class="card">
+          <h4>Transactions</h4>
+          <p>Signed with private keys, verified by nodes, and added to blocks by miners or validators.</p>
+        </div>
+        <div class="card">
+          <h4>Consensus</h4>
+          <p>Networks agree on valid blocks using algorithms like Proof of Work or Proof of Stake.</p>
+        </div>
+        <div class="card">
+          <h4>Smart Contracts</h4>
+          <p>Programs that live on the blockchain — powering tokens and decentralized apps (DApps).</p>
+        </div>
+      </div>
+    </section>
 
-  <section id="tokenomics" class="max-w-6xl mx-auto px-6 py-16">
-    <h3 class="text-3xl font-bold mb-6">Tokenomics Overview</h3>
-    <canvas id="tokenomicsChart" height="200"></canvas>
-  </section>
+    <section id="tokenomics">
+      <h3>Tokenomics — See an Example</h3>
+      <div class="grid grid-3">
+        <div class="card">
+          <h4>Supply Breakdown</h4>
+          <ul>
+            <li><b>Team:</b> 15%</li>
+            <li><b>Ecosystem:</b> 30%</li>
+            <li><b>Treasury:</b> 25%</li>
+            <li><b>Airdrop:</b> 10%</li>
+            <li><b>Liquidity:</b> 20%</li>
+          </ul>
+        </div>
+        <div class="card">
+          <h4>Why It Matters</h4>
+          <p>
+            Tokenomics defines the structure and incentives of a project. A transparent distribution builds trust and stability.
+          </p>
+        </div>
+        <div class="card">
+          <h4>Pro Tip</h4>
+          <p>Always check token supply, emission schedule, and vesting periods before investing.</p>
+        </div>
+      </div>
+    </section>
 
-  <section id="simulator" class="max-w-6xl mx-auto px-6 py-16">
-    <h3 class="text-3xl font-bold mb-6">Price Simulator</h3>
-    <canvas id="priceChart" height="200"></canvas>
-    <div class="mt-6 flex gap-3">
-      <button class="px-4 py-2 border rounded" onclick="buy(100)">Buy $100</button>
-      <button class="px-4 py-2 border rounded" onclick="buy(1000)">Buy $1,000</button>
-      <button class="px-4 py-2 border rounded" onclick="sell(0.5)">Sell 50%</button>
-      <button class="px-4 py-2 border rounded" onclick="sell(1)">Sell All</button>
-    </div>
-    <p class="mt-4 text-gray-500 text-sm">💡 Tip: Prices are mock data. Learn trading risk-free.</p>
-  </section>
+    <section id="simulator">
+      <h3>Interactive Price Simulator</h3>
+      <p>Practice buying and selling with mock funds to learn risk management and position sizing.</p>
+      <div class="card">
+        <div class="simulator">
+          <div class="stats">
+            <p>Current BTC Price: <span id="price-value">$30,000</span></p>
+            <p>Your Net Worth: <span id="net-worth">$10,000</span></p>
+          </div>
+          <div class="actions">
+            <button id="buy100">Buy $100</button>
+            <button id="buy1000">Buy $1,000</button>
+            <button id="sell25">Sell 25%</button>
+            <button id="sellAll">Sell All</button>
+          </div>
+        </div>
+      </div>
+    </section>
 
-  <section id="faq" class="max-w-6xl mx-auto px-6 py-16">
-    <h3 class="text-3xl font-bold mb-6">Frequently Asked Questions</h3>
-    <div class="space-y-3">
-      <details class="border rounded-lg p-4">
-        <summary class="font-semibold">Is crypto safe?</summary>
-        <p class="mt-2 text-sm text-gray-600 dark:text-gray-300">Crypto is safe if you manage your private keys properly and avoid scams.</p>
-      </details>
-      <details class="border rounded-lg p-4">
-        <summary class="font-semibold">How can I start investing?</summary>
-        <p class="mt-2 text-sm text-gray-600 dark:text-gray-300">Start small, use trusted exchanges, and never invest more than you can afford to lose.</p>
-      </details>
-    </div>
-  </section>
-
-  <footer class="border-t border-gray-200 dark:border-gray-700 py-6 text-center text-sm text-gray-500 dark:text-gray-400">
-    Made with ❤️ — for learning only. © 2025 CryptoIntro
-  </footer>
+    <footer>
+      <p>Made with ❤️ for learning only — not financial advice.</p>
+      <p>&copy; 2025 CryptoIntro. All rights reserved.</p>
+    </footer>
+  </main>
 
   <script src="script.js"></script>
 </body>
 </html>
+

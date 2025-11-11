@@ -1,146 +1,433 @@
-<!DOCTYPE html>
+from pathlib import Path
+# Retry writing files
+
+html = """<!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>CryptoIntro — Learn Cryptocurrency Basics</title>
-  <link rel="stylesheet" href="style.css" />
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>CryptoIntro — Learn Cryptocurrency</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css" />
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body>
-  <header>
-    <div class="logo">
-      <div class="logo-icon">CR</div>
-      <div>
-        <div class="title">CryptoIntro</div>
-        <div class="subtitle">Learn crypto fundamentals — simple, safe, smart</div>
-      </div>
-    </div>
-    <nav>
-      <a href="#what">What is Crypto</a>
-      <a href="#how">How it Works</a>
-      <a href="#tokenomics">Tokenomics</a>
-      <a href="#simulator">Simulator</a>
-      <button id="toggle-theme" class="toggle">Dark</button>
-    </nav>
-  </header>
-
-  <main>
-    <section class="hero">
-      <div>
-        <h2>Understand Crypto — From Blocks to Tokens</h2>
-        <p class="lead">
-          A guided, interactive introduction to how blockchain, cryptocurrencies, and token economies work — no jargon, just clarity.
-        </p>
-        <div class="hero-btns">
-          <a href="#simulator" class="btn-primary">Start Learning</a>
-          <a href="#tokenomics" class="btn-outline">Explore Tokenomics</a>
-        </div>
-        <p class="live-price">Live mock BTC price: <span id="price-value">$30,000</span></p>
-      </div>
-      <div class="card">
-        <h4>Quick Path</h4>
-        <ol>
-          <li>1. What is a blockchain?</li>
-          <li>2. How transactions and wallets work</li>
-          <li>3. Consensus & decentralization</li>
-          <li>4. Tokens and tokenomics</li>
-          <li>5. Safety & next steps</li>
-        </ol>
-      </div>
-    </section>
-
-    <section id="what">
-      <h3>What is Cryptocurrency?</h3>
-      <p>
-        Cryptocurrency is digital money secured by cryptography and recorded on a blockchain. Instead of a single bank controlling the ledger, many participants verify transactions — that’s decentralization.
-      </p>
-      <div class="grid grid-3">
-        <div class="card">
-          <h4>Blockchain</h4>
-          <p>A linked chain of blocks. Each block contains transactions and a reference to the previous block — making tampering expensive.</p>
-        </div>
-        <div class="card">
-          <h4>Wallets & Keys</h4>
-          <p>Your private key signs transactions — keep it secret. Your public address is what you share to receive funds.</p>
-        </div>
-        <div class="card">
-          <h4>Try It</h4>
-          <p>Simulate sending tokens and see how prices fluctuate in the interactive section below.</p>
-        </div>
-      </div>
-    </section>
-
-    <section id="how">
-      <h3>How It Works — A Short Walkthrough</h3>
-      <div class="grid grid-3">
-        <div class="card">
-          <h4>Transactions</h4>
-          <p>Signed with private keys, verified by nodes, and added to blocks by miners or validators.</p>
-        </div>
-        <div class="card">
-          <h4>Consensus</h4>
-          <p>Networks agree on valid blocks using algorithms like Proof of Work or Proof of Stake.</p>
-        </div>
-        <div class="card">
-          <h4>Smart Contracts</h4>
-          <p>Programs that live on the blockchain — powering tokens and decentralized apps (DApps).</p>
-        </div>
-      </div>
-    </section>
-
-    <section id="tokenomics">
-      <h3>Tokenomics — See an Example</h3>
-      <div class="grid grid-3">
-        <div class="card">
-          <h4>Supply Breakdown</h4>
-          <ul>
-            <li><b>Team:</b> 15%</li>
-            <li><b>Ecosystem:</b> 30%</li>
-            <li><b>Treasury:</b> 25%</li>
-            <li><b>Airdrop:</b> 10%</li>
-            <li><b>Liquidity:</b> 20%</li>
-          </ul>
-        </div>
-        <div class="card">
-          <h4>Why It Matters</h4>
-          <p>
-            Tokenomics defines the structure and incentives of a project. A transparent distribution builds trust and stability.
-          </p>
-        </div>
-        <div class="card">
-          <h4>Pro Tip</h4>
-          <p>Always check token supply, emission schedule, and vesting periods before investing.</p>
-        </div>
-      </div>
-    </section>
-
-    <section id="simulator">
-      <h3>Interactive Price Simulator</h3>
-      <p>Practice buying and selling with mock funds to learn risk management and position sizing.</p>
-      <div class="card">
-        <div class="simulator">
-          <div class="stats">
-            <p>Current BTC Price: <span id="price-value">$30,000</span></p>
-            <p>Your Net Worth: <span id="net-worth">$10,000</span></p>
-          </div>
-          <div class="actions">
-            <button id="buy100">Buy $100</button>
-            <button id="buy1000">Buy $1,000</button>
-            <button id="sell25">Sell 25%</button>
-            <button id="sellAll">Sell All</button>
+  <div class="site">
+    <header class="nav" role="banner">
+      <div class="container nav-inner">
+        <div class="brand">
+          <div class="logo">CR</div>
+          <div class="brand-text">
+            <div class="brand-title">CryptoIntro</div>
+            <div class="brand-sub">Learn crypto basics — clearly</div>
           </div>
         </div>
-      </div>
-    </section>
 
-    <footer>
-      <p>Made with ❤️ for learning only — not financial advice.</p>
-      <p>&copy; 2025 CryptoIntro. All rights reserved.</p>
+        <button id="navToggle" class="nav-toggle" aria-expanded="false" aria-label="Toggle navigation">☰</button>
+
+        <nav class="nav-links" id="navLinks" role="navigation">
+          <a href="#home" class="nav-link">Home</a>
+          <a href="#about" class="nav-link">About</a>
+          <a href="#tokenomics" class="nav-link">Tokenomics</a>
+          <a href="#simulator" class="nav-link">Simulator</a>
+          <a href="#faq" class="nav-link">FAQ</a>
+        </nav>
+
+        <div class="nav-actions">
+          <button id="themeToggle" class="btn btn-ghost" aria-pressed="false">🌙</button>
+          <a href="#simulator" class="btn btn-primary">Try Simulator</a>
+        </div>
+      </div>
+    </header>
+
+    <main>
+      <section id="home" class="hero container">
+        <div class="hero-left">
+          <h1 class="hero-title">Understand Crypto — From Blockchain to Tokenomics</h1>
+          <p class="hero-lead">Interactive lessons, visual tokenomics, and a live mock price simulator to practice trading risk-free.</p>
+          <div class="hero-ctas">
+            <a class="btn btn-primary" href="#simulator">Start Learning</a>
+            <a class="btn btn-outline" href="#tokenomics">Explore Tokenomics</a>
+          </div>
+          <div class="hero-stats">
+            <div class="stat">
+              <div class="stat-label">Live mock BTC</div>
+              <div id="priceValue" class="stat-value">$30,000</div>
+            </div>
+            <div class="stat">
+              <div class="stat-label">Net worth (demo)</div>
+              <div id="netWorth" class="stat-value">$10,000</div>
+            </div>
+          </div>
+        </div>
+        <div class="hero-right card">
+          <canvas id="heroChart" aria-hidden="true"></canvas>
+        </div>
+      </section>
+
+      <section id="about" class="block container reveal">
+        <div class="block-grid">
+          <div class="card">
+            <h3>What is Cryptocurrency?</h3>
+            <p>Cryptocurrency is digital money secured by cryptography and recorded on a blockchain. Decentralization means the network — not a single company — validates transactions.</p>
+          </div>
+          <div class="card">
+            <h3>Wallets & Keys</h3>
+            <p>Your private key signs transactions. Never share it. Wallets manage keys and addresses; addresses are safe to share to receive funds.</p>
+          </div>
+          <div class="card">
+            <h3>Smart Contracts</h3>
+            <p>Self-executing programs on blockchains that enable tokens, decentralized apps and programmable money.</p>
+          </div>
+        </div>
+      </section>
+
+      <section id="tokenomics" class="container reveal">
+        <div class="section-head">
+          <h2>Tokenomics Example</h2>
+          <p class="muted">A transparent allocation and clear emission schedule matter. Here's an example distribution.</p>
+        </div>
+
+        <div class="split">
+          <div class="card">
+            <ul class="token-list">
+              <li><span>Team</span><span>15%</span></li>
+              <li><span>Ecosystem</span><span>30%</span></li>
+              <li><span>Treasury</span><span>25%</span></li>
+              <li><span>Airdrop</span><span>10%</span></li>
+              <li><span>Liquidity</span><span>20%</span></li>
+            </ul>
+          </div>
+          <div class="card chart-card">
+            <canvas id="tokenChart" aria-hidden="true"></canvas>
+          </div>
+        </div>
+      </section>
+
+      <section id="simulator" class="container reveal">
+        <div class="section-head">
+          <h2>Interactive Price Simulator</h2>
+          <p class="muted">Practice position sizing and risk management with mock funds (no real money involved).</p>
+        </div>
+
+        <div class="simulator-panel card">
+          <div class="sim-left">
+            <div class="sim-row">
+              <div class="label">Mock BTC Price</div>
+              <div id="priceDisplay" class="value">$30,000</div>
+            </div>
+            <div class="sim-row">
+              <div class="label">Cash</div>
+              <div id="cashDisplay" class="value">$10,000</div>
+            </div>
+            <div class="sim-row">
+              <div class="label">Owned</div>
+              <div id="ownedDisplay" class="value">0.000000 BTC</div>
+            </div>
+            <div class="sim-actions">
+              <button class="btn" id="buy100">Buy $100</button>
+              <button class="btn" id="buy1000">Buy $1,000</button>
+              <button class="btn btn-ghost" id="sell25">Sell 25%</button>
+              <button class="btn btn-ghost" id="sellAll">Sell All</button>
+            </div>
+          </div>
+          <div class="sim-right">
+            <canvas id="priceChart"></canvas>
+          </div>
+        </div>
+      </section>
+
+      <section id="faq" class="container reveal">
+        <div class="section-head">
+          <h2>Frequently Asked Questions</h2>
+        </div>
+        <div class="faq-grid">
+          <details class="faq card"><summary>Is cryptocurrency safe?</summary><p class="muted">Crypto can be safe when you follow best practices: hardware wallets, 2FA for exchanges, and never share private keys.</p></details>
+          <details class="faq card"><summary>How do I start learning?</summary><p class="muted">Start with small amounts, practice on testnets, read official docs, and never invest more than you can afford to lose.</p></details>
+          <details class="faq card"><summary>Are tokens the same as coins?</summary><p class="muted">Coins typically refer to native blockchain assets (like BTC), tokens are assets built on platforms (like ERC-20 on Ethereum).</p></details>
+        </div>
+      </section>
+    </main>
+
+    <footer class="footer">
+      <div class="container footer-inner">
+        <div>© 2025 CryptoIntro — educational only, not financial advice</div>
+        <div class="footer-links"><a href="#privacy">Privacy</a>·<a href="#terms">Terms</a></div>
+      </div>
     </footer>
-  </main>
+  </div>
 
   <script src="script.js"></script>
 </body>
 </html>
+"""
+
+css = """/* style.css — Professional, clean UI for CryptoIntro */
+
+:root{
+  --bg: #f6f8fb;
+  --card: #ffffff;
+  --muted: #6b7280;
+  --accent: #6366f1;
+  --accent-2: #06b6d4;
+  --glass: rgba(2,6,23,0.03);
+  --radius: 12px;
+  --max-width: 1100px;
+}
+
+/* Reset & base */
+*{box-sizing:border-box}
+html,body{height:100%}
+body{
+  margin:0;
+  font-family: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial;
+  background:var(--bg);
+  color:#071433;
+  -webkit-font-smoothing:antialiased;
+  -moz-osx-font-smoothing:grayscale;
+  transition: background .25s ease, color .25s ease;
+  line-height:1.5;
+}
+
+.dark body{background:#071428; color:#cfe7ff}
+
+/* layout */
+.container{max-width:var(--max-width); margin:0 auto; padding:1.25rem}
+
+/* NAV */
+.nav{position:sticky; top:0; z-index:40; backdrop-filter: blur(8px); background: rgba(255,255,255,0.6); border-bottom: 1px solid rgba(2,6,23,0.04)}
+.dark .nav{background: rgba(2,6,23,0.45); border-bottom:1px solid rgba(255,255,255,0.04)}
+.nav-inner{display:flex; align-items:center; gap:1rem; justify-content:space-between; padding:.6rem 0}
+.brand{display:flex; align-items:center; gap:0.75rem}
+.logo{width:48px; height:48px; border-radius:10px; display:flex; align-items:center; justify-content:center; background:linear-gradient(135deg,var(--accent),var(--accent-2)); color:white; font-weight:700}
+.brand-title{font-weight:700}
+.brand-sub{font-size:.78rem; color:var(--muted)}
+
+/* nav responsiveness */
+.nav-links{display:flex; gap:1rem; align-items:center}
+.nav-link{color:inherit; text-decoration:none; font-weight:500; padding:.45rem .6rem; border-radius:8px}
+.nav-link:hover{background:rgba(99,102,241,0.08)}
+
+.nav-actions{display:flex; gap:.5rem; align-items:center}
+.nav-toggle{display:none}
+
+/* Buttons */
+.btn{padding:.6rem .9rem; border-radius:10px; border:1px solid transparent; background:transparent; cursor:pointer; font-weight:600}
+.btn-primary{background:linear-gradient(90deg,var(--accent),var(--accent-2)); color:white; box-shadow:0 6px 18px rgba(99,102,241,.12)}
+.btn-outline{border:1px solid rgba(2,6,23,0.06)}
+.btn-ghost{background:transparent; border:1px solid rgba(2,6,23,0.06)}
+
+/* Hero */
+.hero{display:grid; grid-template-columns:1fr 420px; gap:2rem; align-items:center; padding-top:2.5rem; padding-bottom:2.5rem}
+.hero-title{font-size:2rem; margin:0 0 .5rem; line-height:1.05}
+.hero-lead{color:var(--muted); margin:0 0 1rem}
+.hero-ctas{display:flex; gap:0.75rem; margin-bottom:1rem}
+.hero-stats{display:flex; gap:1rem; margin-top:1rem}
+.stat{background:var(--glass); padding:.6rem .9rem; border-radius:10px; min-width:140px}
+.stat-label{font-size:.8rem; color:var(--muted)}
+.stat-value{font-weight:700; margin-top:.25rem}
+
+/* Cards and sections */
+.card{background:var(--card); border-radius:var(--radius); padding:1rem; box-shadow:0 8px 30px rgba(2,6,23,0.04)}
+.dark .card{background:linear-gradient(180deg,#071428,#081029); box-shadow:0 8px 30px rgba(2,6,23,0.6); color:#cfe7ff}
+
+.block{padding-top:0.75rem; padding-bottom:0.75rem}
+.block-grid{display:grid; grid-template-columns:repeat(3,1fr); gap:1rem}
+
+.section-head{margin-bottom:1rem}
+.section-head h2{margin:0}
+.muted{color:var(--muted)}
+
+/* tokenomics */
+.split{display:flex; gap:1rem}
+.token-list{list-style:none; padding:0; margin:0}
+.token-list li{display:flex; justify-content:space-between; padding:.6rem 0; border-bottom:1px solid rgba(2,6,23,0.04)}
+
+/* simulator */
+.simulator-panel{display:flex; gap:1rem; align-items:stretch}
+.sim-left{flex:0 0 320px}
+.sim-right{flex:1}
+.sim-row{display:flex; justify-content:space-between; padding:.35rem 0}
+.sim-actions{display:flex; gap:.5rem; flex-wrap:wrap; margin-top:.5rem}
+
+/* FAQ */
+.faq-grid{display:grid; grid-template-columns:repeat(3,1fr); gap:1rem}
+.faq summary{cursor:pointer; list-style:none}
+.faq p{margin:0; color:var(--muted)}
+
+/* Footer */
+.footer{padding:2rem 0; border-top:1px solid rgba(2,6,23,0.04); margin-top:2rem; color:var(--muted)}
+
+/* responsive */
+@media (max-width:1000px){
+  .hero{grid-template-columns:1fr; padding:1.25rem 0}
+  .block-grid{grid-template-columns:1fr 1fr}
+  .split{flex-direction:column}
+  .faq-grid{grid-template-columns:1fr}
+  .nav-links{display:none}
+  .nav-toggle{display:block}
+}
+
+@media (max-width:600px){
+  .block-grid{grid-template-columns:1fr}
+  .brand-sub{display:none}
+}
+
+/* reveal animation */
+.reveal{opacity:0; transform:translateY(10px); transition:all .6s cubic-bezier(.2,.9,.3,1)}
+.reveal.show{opacity:1; transform:none}
+"""
+
+js = """// script.js — Professional interactive behaviors for CryptoIntro
+
+// Utilities
+const qs = sel => document.querySelector(sel);
+const qsa = sel => Array.from(document.querySelectorAll(sel));
+
+// NAV toggle for small screens
+const navToggle = qs('#navToggle');
+const navLinks = qs('#navLinks');
+navToggle?.addEventListener('click', () => {
+  const expanded = navToggle.getAttribute('aria-expanded') === 'true';
+  navToggle.setAttribute('aria-expanded', String(!expanded));
+  navLinks.style.display = expanded ? '' : 'flex';
+});
+
+// Theme toggle with persistence
+const themeToggle = qs('#themeToggle');
+const userPref = localStorage.getItem('ct_theme');
+let dark = userPref ? userPref === 'dark' : (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches);
+if(dark) document.documentElement.classList.add('dark');
+themeToggle.textContent = dark ? '☀️' : '🌙';
+themeToggle.addEventListener('click', () => {
+  dark = !dark;
+  document.documentElement.classList.toggle('dark', dark);
+  themeToggle.textContent = dark ? '☀️' : '🌙';
+  localStorage.setItem('ct_theme', dark ? 'dark' : 'light');
+});
+
+// IntersectionObserver for reveal on scroll
+const observer = new IntersectionObserver((entries)=>{
+  entries.forEach(e=>{
+    if(e.isIntersecting) e.target.classList.add('show');
+  });
+},{threshold:0.15});
+qsa('.reveal').forEach(el => observer.observe(el));
+
+// Chart: Hero mini chart
+const heroCtx = qs('#heroChart').getContext('2d');
+const heroChart = new Chart(heroCtx, {
+  type: 'line',
+  data: {
+    labels: Array.from({length:20},(_,i)=>i+1),
+    datasets:[{label:'Transactions',data:Array.from({length:20},()=>1000+Math.random()*400),borderColor:'#6366f1',pointRadius:0,fill:true,backgroundColor:'rgba(99,102,241,0.08)'}]
+  },
+  options:{responsive:true, maintainAspectRatio:false, plugins:{legend:{display:false}}, scales:{x:{display:false}}}
+});
+
+// Tokenomics pie
+const tokenCtx = qs('#tokenChart').getContext('2d');
+const tokenChart = new Chart(tokenCtx, {
+  type:'doughnut',
+  data:{
+    labels:['Team','Ecosystem','Treasury','Airdrop','Liquidity'],
+    datasets:[{data:[15,30,25,10,20], backgroundColor:['#6366f1','#06b6d4','#10b981','#f59e0b','#ef4444'], hoverOffset:6}]
+  },
+  options:{responsive:true, plugins:{legend:{position:'bottom'}}}
+});
+
+// Price simulator logic and chart
+let price = 30000;
+let cash = 10000;
+let owned = 0;
+
+const priceDisplay = qs('#priceDisplay');
+const cashDisplay = qs('#cashDisplay');
+const ownedDisplay = qs('#ownedDisplay');
+const netWorthDisplay = qs('#netWorth') || null;
+const priceValue = qs('#priceValue') || null;
+
+const priceCtx = qs('#priceChart').getContext('2d');
+const priceChart = new Chart(priceCtx, {
+  type:'line',
+  data:{labels:[], datasets:[{label:'Price', data:[], borderColor:'#6366f1', tension:0.2, pointRadius:0}]},
+  options:{responsive:true, plugins:{legend:{display:false}}, scales:{x:{display:false}}}
+});
+
+function pushPrice(p){
+  const data = priceChart.data;
+  data.labels.push('');
+  data.datasets[0].data.push(p);
+  if(data.labels.length>60){data.labels.shift(); data.datasets[0].data.shift()}
+  priceChart.update('none');
+}
+
+function randomStep(){
+  const change = (Math.random()-0.48) * price * 0.007; // smaller volatility
+  price = Math.max(0.1, Math.round((price+change)*100)/100);
+  pushPrice(price);
+  updateDisplays();
+}
+
+function updateDisplays(){
+  if(priceDisplay) priceDisplay.textContent = `$${price.toLocaleString()}`;
+  if(priceValue) priceValue.textContent = `$${price.toLocaleString()}`;
+  if(cashDisplay) cashDisplay.textContent = `$${cash.toLocaleString()}`;
+  if(ownedDisplay) ownedDisplay.textContent = `${owned.toFixed(6)} BTC`;
+  if(netWorthDisplay) netWorthDisplay.textContent = `$${(cash + owned*price).toLocaleString()}`;
+}
+
+setInterval(randomStep, 1500);
+updateDisplays();
+
+// Buy/sell functions with small UI feedback
+function buy(amount){
+  const spend = Math.min(amount, cash);
+  const qty = spend/price;
+  cash = Math.round((cash - spend)*100)/100;
+  owned = Math.round((owned + qty)*1e6)/1e6;
+  updateDisplays();
+  flashCard('Bought '+qty.toFixed(6)+' BTC');
+}
+
+function sell(percent){
+  const qty = owned * percent;
+  const proceeds = Math.round(qty*price*100)/100;
+  owned = Math.round((owned - qty)*1e6)/1e6;
+  cash = Math.round((cash + proceeds)*100)/100;
+  updateDisplays();
+  flashCard('Sold '+qty.toFixed(6)+' BTC');
+}
+
+// Attach buttons
+qs('#buy100')?.addEventListener('click', ()=>buy(100));
+qs('#buy1000')?.addEventListener('click', ()=>buy(1000));
+qs('#sell25')?.addEventListener('click', ()=>sell(0.25));
+qs('#sellAll')?.addEventListener('click', ()=>sell(1));
+
+// small toast/flash feedback
+function flashCard(msg){
+  const el = document.createElement('div');
+  el.textContent = msg;
+  el.style.position='fixed'; el.style.right='20px'; el.style.bottom='20px';
+  el.style.padding='10px 14px'; el.style.background='rgba(99,102,241,0.95)'; el.style.color='#fff';
+  el.style.borderRadius='8px'; el.style.boxShadow='0 8px 24px rgba(99,102,241,0.12)';
+  document.body.appendChild(el);
+  setTimeout(()=>el.style.opacity='0',1600);
+  setTimeout(()=>el.remove(),2200);
+}
+
+// accessibility: keyboard nav
+qsa('.nav-link').forEach(a=>a.addEventListener('keydown', e=>{ if(e.key==='Enter') a.click() }));
+"""
+
+# write files
+base = Path("/mnt/data")
+(base / "index.html").write_text(html, encoding="utf-8")
+(base / "style.css").write_text(css, encoding="utf-8")
+(base / "script.js").write_text(js, encoding="utf-8")
+
+{"index": str(base / "index.html"), "style": str(base / "style.css"), "script": str(base / "script.js")}
 
